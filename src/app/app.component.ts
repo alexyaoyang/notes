@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {notes} from './notes';
 import * as marked from 'marked';
 
 @Component({
@@ -8,16 +7,35 @@ import * as marked from 'marked';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  notes = notes;
-  chosenNote : any;
+  notes : any[];
+  currentNote : any;
+  currentNoteParsed : string;
 
+  onAddNote(){
+    this.currentNote = { body: '', noteId: localStorage.length };
+    this.currentNoteParsed = '';
+    this.notes.push(this.currentNote);
+  }
   openNote(noteId: number){
-    this.chosenNote = notes[noteId];
+    this.currentNote = this.notes[noteId];
+    this.parseBody();
+    console.log(this.notes, noteId, this.currentNote);
   }
   saveAndReparse(event: any){
     let newBody = event.target.value;
-    this.chosenNote.body = newBody;
-    this.chosenNote.parsedBody = marked(newBody);
+    this.currentNote.body = newBody;
+    this.currentNote.lastSaveDate = new Date().getTime();
+    this.parseBody();
+    localStorage.setItem(this.currentNote.noteId.toString(), JSON.stringify(this.currentNote));
+    this.sortNotes();
+  }
+  parseBody(){
+    this.currentNoteParsed = marked(this.currentNote.body);
+  }
+  sortNotes(){
+    this.notes.sort((a, b) => {
+      return b.lastSaveDate - a.lastSaveDate;
+    });
   }
   ngOnInit(){
     // https://github.com/bvaughn/js-search
@@ -29,8 +47,15 @@ export class AppComponent implements OnInit {
     //     });
     //   }
     // });
-    notes.forEach(note => {
-      note.parsedBody = marked(note.body);
-    });
+    this.notes = [];
+    if(localStorage.length){
+      Object.values(localStorage).forEach(stringNote => {
+        let noteObj = JSON.parse(stringNote);
+        this.notes[noteObj.noteId] = noteObj;
+      });
+      this.openNote(0);
+    }
+    this.sortNotes();
+    console.log(localStorage, this.notes);
   }
 }

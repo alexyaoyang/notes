@@ -1,4 +1,6 @@
-<app-top-bar></app-top-bar>
+<app-top-bar
+  (addNote)="onAddNote()">
+</app-top-bar>
 
 <div class="main-container">
   <div class="notes-container">
@@ -10,12 +12,11 @@
   </div>
 
   <div class="input-container">
-    <textarea (keyup)="saveAndReparse($event);">
-      {{chosenNote && chosenNote.body}}
+    <textarea *ngIf="currentNote" (keyup)="saveAndReparse($event);" [value]="currentNote.body">
     </textarea>
   </div>
 
-  <div *ngIf="!!chosenNote" class="preview-container" [innerHTML]="chosenNote.parsedBody"></div>
+  <div *ngIf="currentNoteParsed" class="preview-container" [innerHTML]="currentNoteParsed"></div>
 </div>
 
 <router-outlet></router-outlet>

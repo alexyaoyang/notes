@@ -10,7 +10,6 @@ export class NoteListItemComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    // this.note.body = marked(this.note.body);
   }
 
 }
