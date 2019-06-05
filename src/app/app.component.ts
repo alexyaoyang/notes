@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as marked from 'marked';
+import * as JsSearch from 'js-search';
 
 @Component({
   selector: 'app-root',
@@ -7,19 +8,26 @@ import * as marked from 'marked';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  notes : any[];
-  currentNote : any;
-  currentNoteParsed : string;
+  notes: any[];
+  filteredNotes: any[];
+  currentNote: any;
+  currentNoteParsed: string;
+  search: any;
+  searchTerm: string;
 
   onAddNote(){
     this.currentNote = { body: '', noteId: localStorage.length };
     this.currentNoteParsed = '';
     this.notes.push(this.currentNote);
+    this.onSearch(this.searchTerm);
   }
-  openNote(noteId: number){
-    this.currentNote = this.notes[noteId];
+  onSearch(searchTerm: string){
+    this.searchTerm = searchTerm;
+    this.filteredNotes = searchTerm ? this.search.search(searchTerm) : this.notes;
+  }
+  openNote(i: number){
+    this.currentNote = this.notes[i];
     this.parseBody();
-    console.log(this.notes, noteId, this.currentNote);
   }
   saveAndReparse(event: any){
     let newBody = event.target.value;
@@ -38,8 +46,6 @@ export class AppComponent implements OnInit {
     });
   }
   ngOnInit(){
-    // https://github.com/bvaughn/js-search
-
     // marked.setOptions({
     //   highlight: function (code, lang, callback) {
     //     require('pygmentize')({ lang: lang, format: 'html' }, code, function (err, result) {
@@ -53,9 +59,15 @@ export class AppComponent implements OnInit {
         let noteObj = JSON.parse(stringNote);
         this.notes[noteObj.noteId] = noteObj;
       });
-      this.openNote(0);
     }
     this.sortNotes();
+    if(this.notes) this.openNote(0);
+    this.filteredNotes = this.notes;
     console.log(localStorage, this.notes);
+
+    this.search = new JsSearch.Search('noteId');
+    this.search.tokenizer = new JsSearch.StopWordsTokenizer(new JsSearch.SimpleTokenizer());
+    this.search.addIndex('body');
+    this.search.addDocuments(this.notes);
   }
 }

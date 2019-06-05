@@ -1,10 +1,11 @@
 <app-top-bar
-  (addNote)="onAddNote()">
+  (addNote)="onAddNote()"
+  (search)="onSearch($event)">
 </app-top-bar>
 
 <div class="main-container">
   <div class="notes-container">
-    <div *ngFor="let note of notes;index as noteId" (click)="openNote(noteId);"> 
+    <div *ngFor="let note of filteredNotes;index as i" (click)="openNote(i);"> 
       <app-note-list-item
         [note]='note'>
       </app-note-list-item>

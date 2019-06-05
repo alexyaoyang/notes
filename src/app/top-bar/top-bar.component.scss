@@ -1,4 +1,17 @@
 .add-button {
   font-size:3em;
   cursor: pointer;
+  color: white;
+}
+
+.add-button:hover {
+  color: black;
+}
+
+.search-input{
+  width: 50vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
 }
